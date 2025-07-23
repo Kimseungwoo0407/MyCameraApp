@@ -27,6 +27,7 @@
     let useFront = true;
     let lastDataURL = null;
 
+    // 카메라 스트림 시작 함수
     async function startCamera() {
       if (currentStream) {
         currentStream.getTracks().forEach(track => track.stop());
@@ -41,24 +42,25 @@
       }
     }
 
-    // 초기 실행
+    // 페이지 로드 시 전면 카메라로 시작
     startCamera();
 
-    // 전환 버튼 클릭 시
+    // 전·후면 전환
     switchButton.addEventListener('click', () => {
       useFront = !useFront;
       startCamera();
     });
 
-    // 캡처 버튼 클릭 시
+    // 사진 찍기
     captureButton.addEventListener('click', () => {
       const ctx = canvas.getContext('2d');
       ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
       lastDataURL = canvas.toDataURL('image/png');
       console.log('Captured:', lastDataURL);
+      alert('사진이 캡처되었습니다!');
     });
 
-    // 전송 버튼 클릭 시
+    // 서버로 전송
     sendButton.addEventListener('click', async () => {
       if (!lastDataURL) {
         alert('먼저 사진을 찍어주세요.');
@@ -77,3 +79,6 @@
         alert('서버 전송 중 오류가 발생했습니다.');
       }
     });
+  </script>
+</body>
+</html>
