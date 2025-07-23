@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <title>Web Camera App</title>
+  <style>
+    body { text-align: center; font-family: Arial, sans-serif; margin-top: 50px; }
+    video, canvas { width: 320px; height: 240px; border: 1px solid #ccc; }
+    button { margin-top: 10px; padding: 10px 20px; font-size: 16px; }
+  </style>
+</head>
+<body>
+  <h1>간단 웹 카메라 앱</h1>
+  <video id="video" autoplay playsinline></video><br>
+  <button id="capture">사진 찍기</button><br>
+  <canvas id="canvas" width="320" height="240"></canvas>
+
+  <script>
+    const video = document.getElementById('video');
+    const canvas = document.getElementById('canvas');
+    const captureButton = document.getElementById('capture');
+
+    // 1. 카메라 스트림 요청
+    navigator.mediaDevices.getUserMedia({ video: true })
+      .then(stream => { video.srcObject = stream; })
+      .catch(err => {
+        console.error('카메라 접근 오류:', err);
+        alert('카메라 권한이 필요합니다.');
+      });
+
+    // 2. 캡처 버튼 클릭 시
+    captureButton.addEventListener('click', () => {
+      const ctx = canvas.getContext('2d');
+      ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
+      const dataURL = canvas.toDataURL('image/png');
+      console.log(dataURL);
+      // TODO: dataURL을 서버나 ML API로 전송하여 분류/분석
+    });
+  </script>
+</body>
+</html>
