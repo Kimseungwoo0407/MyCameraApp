@@ -46,9 +46,18 @@
     }
 
     // 페이지 로드 시 초기화
-    window.addEventListener('load', startCamera);
+    // 페이지 로드 시 초기화 제거
+// 대신 사용자가 명시적으로 시작 버튼을 눌러 카메라 권한 요청하도록 함
+const initButton = document.createElement('button');
+initButton.textContent = '카메라 시작';
+document.body.insertBefore(initButton, video);
 
-    // 전·후면 전환
+initButton.addEventListener('click', async () => {
+  await startCamera();
+  initButton.style.display = 'none'; // 시작 후 숨김
+});
+
+// 전·후면 전환
     switchButton.addEventListener('click', () => {
       useFront = !useFront;
       startCamera();
@@ -74,7 +83,7 @@
         return;
       }
       try {
-        const response = await fetch('https://fancy-rice-yell.loca.lt/upload', {
+        const response = await fetch('https://evil-spies-accept.loca.lt/upload', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ image: lastDataURL })
