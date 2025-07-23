@@ -7,16 +7,17 @@
     body { text-align: center; font-family: Arial, sans-serif; margin-top: 50px; }
     video, canvas { width: 320px; height: 240px; border: 1px solid #ccc; }
     button { margin: 10px 5px; padding: 10px 20px; font-size: 16px; }
+    #init { display: block; margin: 20px auto; }
   </style>
 </head>
 <body>
   <h1>간단 웹 카메라 앱</h1>
-  <!-- 카메라 시작 버튼 추가 -->
-  <button id="init">카메라 시작</button><br>
-  <video id="video" autoplay playsinline muted></video><br>
-  <button id="switch">카메라 전환</button>
-  <button id="capture">사진 찍기</button>
-  <button id="send">전송</button><br>
+  <!-- 사용자 클릭으로 카메라 권한 요청 -->
+  <button id="init">카메라 시작</button>
+  <video id="video" autoplay playsinline muted style="display:none"></video><br>
+  <button id="switch" style="display:none">카메라 전환</button>
+  <button id="capture" style="display:none">사진 찍기</button>
+  <button id="send" style="display:none">전송</button><br>
   <canvas id="canvas" width="320" height="240"></canvas>
 
   <script>
@@ -30,66 +31,59 @@
     let useFront = true;
     let lastDataURL = null;
 
-    // 카메라 스트림 시작 함수
     async function startCamera() {
-      if (currentStream) {
-        currentStream.getTracks().forEach(track => track.stop());
-      }
-      const constraints = { audio: false, video: { facingMode: useFront ? 'user' : 'environment' } };
       try {
-        const stream = await navigator.mediaDevices.getUserMedia(constraints);
-        currentStream = stream;
-        video.srcObject = stream;
-        video.muted = true;
+        if (currentStream) currentStream.getTracks().forEach(t => t.stop());
+        const constraints = { audio: false, video: { facingMode: useFront ? 'user' : 'environment' } };
+        currentStream = await navigator.mediaDevices.getUserMedia(constraints);
+        video.style.display = 'block';
+        switchButton.style.display = 'inline-block';
+        captureButton.style.display = 'inline-block';
+        sendButton.style.display = 'inline-block';
+        video.srcObject = currentStream;
         await video.play();
       } catch (err) {
-        console.error('카메라 접근 오류:', err);
-        alert('카메라 권한이 거부되었거나, 해당 모드를 지원하지 않습니다.');
+        console.error('카메라 권한 오류:', err);
+        alert('카메라 권한이 거부되었거나 지원되지 않는 기기입니다.');
       }
     }
 
-    // 초기화 버튼 클릭 시
     initButton.addEventListener('click', async () => {
       await startCamera();
       initButton.style.display = 'none';
     });
 
-    // 전·후면 전환
     switchButton.addEventListener('click', () => {
       useFront = !useFront;
       startCamera();
     });
 
-    // 사진 찍기
     captureButton.addEventListener('click', () => {
-      if (!currentStream) {
-        alert('카메라가 준비되지 않았습니다.');
-        return;
-      }
+      if (!currentStream) return alert('카메라를 먼저 시작해주세요.');
       const ctx = canvas.getContext('2d');
       ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
       lastDataURL = canvas.toDataURL('image/png');
-      console.log('Captured:', lastDataURL);
-      alert('사진이 캡처되었습니다!');
+      console.log('Captured image');
+      alert('사진 캡처 완료');
     });
 
-    // 서버로 전송
     sendButton.addEventListener('click', async () => {
-      if (!lastDataURL) {
-        alert('먼저 사진을 찍어주세요.');
-        return;
-      }
+      if (!lastDataURL) return alert('먼저 사진을 찍어주세요.');
       try {
         const response = await fetch('https://fancy-rice-yell.loca.lt/upload', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ image: lastDataURL })
         });
+        if (!response.ok) {
+          console.error('HTTP error', response.status, response.statusText);
+          return alert(`서버 오류: ${response.status}`);
+        }
         const result = await response.json();
         alert(result.message || '전송 완료');
       } catch (err) {
-        console.error('전송 오류:', err);
-        alert('서버 전송 중 오류가 발생했습니다.');
+        console.error('전송 예외:', err);
+        alert(`전송 중 예외 발생: ${err.message}`);
       }
     });
   </script>
