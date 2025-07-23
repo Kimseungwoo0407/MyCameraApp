@@ -11,6 +11,8 @@
 </head>
 <body>
   <h1>간단 웹 카메라 앱</h1>
+  <!-- 카메라 시작 버튼 추가 -->
+  <button id="init">카메라 시작</button><br>
   <video id="video" autoplay playsinline muted></video><br>
   <button id="switch">카메라 전환</button>
   <button id="capture">사진 찍기</button>
@@ -18,6 +20,7 @@
   <canvas id="canvas" width="320" height="240"></canvas>
 
   <script>
+    const initButton = document.getElementById('init');
     const video = document.getElementById('video');
     const canvas = document.getElementById('canvas');
     const captureButton = document.getElementById('capture');
@@ -45,19 +48,13 @@
       }
     }
 
-    // 페이지 로드 시 초기화
-    // 페이지 로드 시 초기화 제거
-// 대신 사용자가 명시적으로 시작 버튼을 눌러 카메라 권한 요청하도록 함
-const initButton = document.createElement('button');
-initButton.textContent = '카메라 시작';
-document.body.insertBefore(initButton, video);
+    // 초기화 버튼 클릭 시
+    initButton.addEventListener('click', async () => {
+      await startCamera();
+      initButton.style.display = 'none';
+    });
 
-initButton.addEventListener('click', async () => {
-  await startCamera();
-  initButton.style.display = 'none'; // 시작 후 숨김
-});
-
-// 전·후면 전환
+    // 전·후면 전환
     switchButton.addEventListener('click', () => {
       useFront = !useFront;
       startCamera();
@@ -95,3 +92,6 @@ initButton.addEventListener('click', async () => {
         alert('서버 전송 중 오류가 발생했습니다.');
       }
     });
+  </script>
+</body>
+</html>
