@@ -6,7 +6,7 @@ import json
 import os
 
 # 모델 및 라벨 로드
-model = tf.keras.models.load_model("./food101_mobilenetv2_224.h5")
+model = tf.keras.models.load_model("C:/Users/Owner/Desktop/study/MyCameraApp/food101_mobilenetv2_224.h5")
 with open("label_map.json", "r", encoding="utf-8") as f:
     label_map = json.load(f)
 
