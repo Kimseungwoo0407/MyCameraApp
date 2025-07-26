@@ -71,7 +71,7 @@
   if (!lastDataURL) return alert('먼저 사진을 찍어주세요.');
 
   try {
-    const response = await fetch('https://xxx.localhost.run/upload', {
+    const response = await fetch('https://8aa24c87832ef6.lhr.life/upload', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ image: lastDataURL })
