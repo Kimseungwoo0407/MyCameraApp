@@ -70,7 +70,7 @@
     sendButton.addEventListener('click', async () => {
       if (!lastDataURL) return alert('먼저 사진을 찍어주세요.');
       try {
-        const response = await fetch('https://230d8815762b97180c4b3fa203d6cac9.serveo.net/upload', {
+        const response = await fetch('https://mycameraapp-production.up.railway.app/upload', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ image: lastDataURL })
