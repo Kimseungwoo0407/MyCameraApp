@@ -68,24 +68,29 @@
     });
 
     sendButton.addEventListener('click', async () => {
-      if (!lastDataURL) return alert('먼저 사진을 찍어주세요.');
-      try {
-        const response = await fetch('https://8aa24c87832ef6.lhr.life/upload', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ image: lastDataURL })
-        });
-        if (!response.ok) {
-          console.error('HTTP error', response.status, response.statusText);
-          return alert(`서버 오류: ${response.status}`);
-        }
-        const result = await response.json();
-        alert(result.message || '전송 완료');
-      } catch (err) {
-        console.error('전송 예외:', err);
-        alert(`전송 중 예외 발생: ${err.message}`);
-      }
+  if (!lastDataURL) return alert('먼저 사진을 찍어주세요.');
+
+  try {
+    const response = await fetch('https://xxx.localhost.run/upload', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ image: lastDataURL })
     });
+
+    const result = await response.json();
+
+    if (!response.ok || result.error) {
+      // 오류 응답 처리
+      alert(`❌ 예측 실패: ${result.message || '서버 오류 발생'}`);
+    } else {
+      // 정상 응답 처리
+      alert(`🍽 예측 결과: ${result.prediction.label} (${(result.prediction.confidence * 100).toFixed(1)}%)`);
+    }
+  } catch (err) {
+    console.error('전송 예외:', err);
+    alert(`전송 중 오류 발생: ${err.message}`);
+  }
+});
   </script>
 </body>
 </html>
